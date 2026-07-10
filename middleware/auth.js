@@ -1,0 +1,17 @@
+function requireIngestKey(req, res, next) {
+  const key = req.headers['x-api-key'];
+  if (!key || key !== process.env.METRICS_API_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
+
+function requireAdminKey(req, res, next) {
+  const key = req.headers['x-admin-key'];
+  if (!key || key !== process.env.ADMIN_API_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
+
+module.exports = { requireIngestKey, requireAdminKey };
