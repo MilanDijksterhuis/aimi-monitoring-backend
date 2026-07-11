@@ -31,7 +31,10 @@ db.exec(`
     network_connections INTEGER,
     pm2_apps_online INTEGER,
     pm2_apps_total INTEGER,
-    pm2_restart_count INTEGER
+    pm2_restart_count INTEGER,
+    fail2ban_detail TEXT,
+    pm2_detail TEXT,
+    network_detail TEXT
   );
 
   CREATE TABLE IF NOT EXISTS logs (

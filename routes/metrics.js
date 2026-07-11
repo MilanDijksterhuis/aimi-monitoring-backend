@@ -10,14 +10,16 @@ const insertMetric = db.prepare(`
     network_rx_mb, network_tx_mb, uptime_seconds, load_avg_1m,
     load_avg_5m, load_avg_15m, ssh_users, fail2ban_banned,
     nginx_connections, network_connections,
-    pm2_apps_online, pm2_apps_total, pm2_restart_count
+    pm2_apps_online, pm2_apps_total, pm2_restart_count,
+    fail2ban_detail, pm2_detail, network_detail
   ) VALUES (
     @cpu_percent, @ram_percent, @ram_used_mb, @ram_total_mb,
     @disk_percent, @disk_used_gb, @disk_total_gb,
     @network_rx_mb, @network_tx_mb, @uptime_seconds, @load_avg_1m,
     @load_avg_5m, @load_avg_15m, @ssh_users, @fail2ban_banned,
     @nginx_connections, @network_connections,
-    @pm2_apps_online, @pm2_apps_total, @pm2_restart_count
+    @pm2_apps_online, @pm2_apps_total, @pm2_restart_count,
+    @fail2ban_detail, @pm2_detail, @network_detail
   )
 `);
 
@@ -30,6 +32,7 @@ router.post('/', requireIngestKey, (req, res) => {
       load_avg_5m, load_avg_15m, ssh_users, fail2ban_banned,
       nginx_connections, network_connections,
       pm2_apps_online, pm2_apps_total, pm2_restart_count,
+      fail2ban_detail, pm2_detail, network_detail,
     } = req.body;
 
     insertMetric.run({
@@ -53,6 +56,9 @@ router.post('/', requireIngestKey, (req, res) => {
       pm2_apps_online: pm2_apps_online ?? null,
       pm2_apps_total: pm2_apps_total ?? null,
       pm2_restart_count: pm2_restart_count ?? null,
+      fail2ban_detail: fail2ban_detail ?? null,
+      pm2_detail: pm2_detail ?? null,
+      network_detail: network_detail ?? null,
     });
 
     res.status(201).json({ ok: true });
