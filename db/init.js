@@ -54,9 +54,37 @@ db.exec(`
     network_tx_total_mb REAL
   );
 
+  CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT DEFAULT (datetime('now')),
+    type TEXT,
+    severity TEXT,
+    message TEXT,
+    resolved INTEGER DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS hetzner_costs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT DEFAULT (datetime('now')),
+    month TEXT,
+    total_eur REAL,
+    server_costs_eur REAL,
+    raw_response TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS ssh_logins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT DEFAULT (datetime('now')),
+    successful_detail TEXT,
+    failed_detail TEXT
+  );
+
   CREATE INDEX IF NOT EXISTS idx_metrics_created_at ON metrics(created_at);
   CREATE INDEX IF NOT EXISTS idx_logs_created_at ON logs(created_at);
   CREATE INDEX IF NOT EXISTS idx_daily_checks_created_at ON daily_checks(created_at);
+  CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
+  CREATE INDEX IF NOT EXISTS idx_hetzner_costs_created_at ON hetzner_costs(created_at);
+  CREATE INDEX IF NOT EXISTS idx_ssh_logins_created_at ON ssh_logins(created_at);
 `);
 
 module.exports = db;

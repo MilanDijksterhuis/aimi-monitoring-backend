@@ -37,4 +37,28 @@ router.get('/', requireAdminKey, (req, res) => {
   res.json(rows);
 });
 
+function toCsv(rows) {
+  if (rows.length === 0) return '';
+  const headers = Object.keys(rows[0]);
+  const escape = (val) => {
+    if (val === null || val === undefined) return '';
+    const str = String(val);
+    return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+  };
+  const lines = [headers.join(',')];
+  for (const row of rows) {
+    lines.push(headers.map((h) => escape(row[h])).join(','));
+  }
+  return lines.join('\n');
+}
+
+router.get('/export.csv', requireAdminKey, (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 1000, 10000);
+  const rows = db.prepare('SELECT * FROM logs ORDER BY id DESC LIMIT ?').all(limit);
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="logs-export.csv"');
+  res.send(toCsv(rows));
+});
+
 module.exports = router;

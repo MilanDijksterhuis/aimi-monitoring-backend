@@ -11,11 +11,36 @@ const insertDailyCheck = db.prepare(`
   )
 `);
 
+const insertAlert = db.prepare(`
+  INSERT INTO alerts (type, severity, message)
+  VALUES (@type, @severity, @message)
+`);
+
+const findTodaysUnresolvedSslAlert = db.prepare(`
+  SELECT id FROM alerts
+  WHERE type = 'ssl' AND resolved = 0
+    AND date(created_at) = date('now')
+  LIMIT 1
+`);
+
+function maybeCreateSslAlert(ssl_days_remaining) {
+  if (ssl_days_remaining == null || ssl_days_remaining >= 7) return;
+  if (findTodaysUnresolvedSslAlert.get()) return;
+
+  insertAlert.run({
+    type: 'ssl',
+    severity: 'critical',
+    message: `SSL certificaat verloopt over ${ssl_days_remaining} dagen`,
+  });
+}
+
 router.post('/', requireIngestKey, (req, res) => {
   try {
     const {
       ssl_days_remaining, pending_updates, network_rx_total_mb, network_tx_total_mb,
     } = req.body;
+
+    maybeCreateSslAlert(ssl_days_remaining);
 
     insertDailyCheck.run({
       ssl_days_remaining: ssl_days_remaining ?? null,

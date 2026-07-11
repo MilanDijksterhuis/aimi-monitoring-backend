@@ -8,6 +8,9 @@ const db = require('./db/init');
 const metricsRouter = require('./routes/metrics');
 const logsRouter = require('./routes/logs');
 const dailyCheckRouter = require('./routes/dailyCheck');
+const alertsRouter = require('./routes/alerts');
+const sshLoginsRouter = require('./routes/sshLogins');
+const hetznerCostsRouter = require('./routes/hetznerCosts');
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/metrics', metricsRouter);
 app.use('/api/logs', logsRouter);
 app.use('/api/daily-check', dailyCheckRouter);
+app.use('/api/alerts', alertsRouter);
+app.use('/api/ssh-logins', sshLoginsRouter);
+app.use('/api/hetzner-costs', hetznerCostsRouter);
 
 // Dagelijkse cleanup om 03:00 — verwijdert rijen ouder dan 14 dagen
 cron.schedule('0 3 * * *', () => {
