@@ -11,7 +11,8 @@ const insertMetric = db.prepare(`
     load_avg_5m, load_avg_15m, ssh_users, fail2ban_banned,
     nginx_connections, network_connections,
     pm2_apps_online, pm2_apps_total, pm2_restart_count,
-    fail2ban_detail, pm2_detail, network_detail
+    fail2ban_detail, pm2_detail, network_detail,
+    fail2ban_active, unattended_upgrades_active, ufw_active, reboot_required
   ) VALUES (
     @cpu_percent, @ram_percent, @ram_used_mb, @ram_total_mb,
     @disk_percent, @disk_used_gb, @disk_total_gb,
@@ -19,7 +20,8 @@ const insertMetric = db.prepare(`
     @load_avg_5m, @load_avg_15m, @ssh_users, @fail2ban_banned,
     @nginx_connections, @network_connections,
     @pm2_apps_online, @pm2_apps_total, @pm2_restart_count,
-    @fail2ban_detail, @pm2_detail, @network_detail
+    @fail2ban_detail, @pm2_detail, @network_detail,
+    @fail2ban_active, @unattended_upgrades_active, @ufw_active, @reboot_required
   )
 `);
 
@@ -67,6 +69,7 @@ router.post('/', requireIngestKey, (req, res) => {
       nginx_connections, network_connections,
       pm2_apps_online, pm2_apps_total, pm2_restart_count,
       fail2ban_detail, pm2_detail, network_detail,
+      fail2ban_active, unattended_upgrades_active, ufw_active, reboot_required,
     } = req.body;
 
     detectNewFail2banBans(fail2ban_detail);
@@ -95,6 +98,10 @@ router.post('/', requireIngestKey, (req, res) => {
       fail2ban_detail: fail2ban_detail ?? null,
       pm2_detail: pm2_detail ?? null,
       network_detail: network_detail ?? null,
+      fail2ban_active: fail2ban_active ?? null,
+      unattended_upgrades_active: unattended_upgrades_active ?? null,
+      ufw_active: ufw_active ?? null,
+      reboot_required: reboot_required ?? null,
     });
 
     res.status(201).json({ ok: true });

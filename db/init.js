@@ -34,7 +34,11 @@ db.exec(`
     pm2_restart_count INTEGER,
     fail2ban_detail TEXT,
     pm2_detail TEXT,
-    network_detail TEXT
+    network_detail TEXT,
+    fail2ban_active INTEGER,
+    unattended_upgrades_active INTEGER,
+    ufw_active INTEGER,
+    reboot_required INTEGER
   );
 
   CREATE TABLE IF NOT EXISTS logs (
@@ -51,7 +55,14 @@ db.exec(`
     ssl_days_remaining INTEGER,
     pending_updates INTEGER,
     network_rx_total_mb REAL,
-    network_tx_total_mb REAL
+    network_tx_total_mb REAL,
+    os_version TEXT,
+    kernel_version TEXT,
+    ip_address TEXT,
+    hostname TEXT,
+    timezone TEXT,
+    server_created_at TEXT,
+    datacenter_location TEXT
   );
 
   CREATE TABLE IF NOT EXISTS alerts (

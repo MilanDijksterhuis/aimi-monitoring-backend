@@ -5,9 +5,13 @@ const { requireIngestKey, requireAdminKey } = require('../middleware/auth');
 
 const insertDailyCheck = db.prepare(`
   INSERT INTO daily_checks (
-    ssl_days_remaining, pending_updates, network_rx_total_mb, network_tx_total_mb
+    ssl_days_remaining, pending_updates, network_rx_total_mb, network_tx_total_mb,
+    os_version, kernel_version, ip_address, hostname, timezone,
+    server_created_at, datacenter_location
   ) VALUES (
-    @ssl_days_remaining, @pending_updates, @network_rx_total_mb, @network_tx_total_mb
+    @ssl_days_remaining, @pending_updates, @network_rx_total_mb, @network_tx_total_mb,
+    @os_version, @kernel_version, @ip_address, @hostname, @timezone,
+    @server_created_at, @datacenter_location
   )
 `);
 
@@ -38,6 +42,8 @@ router.post('/', requireIngestKey, (req, res) => {
   try {
     const {
       ssl_days_remaining, pending_updates, network_rx_total_mb, network_tx_total_mb,
+      os_version, kernel_version, ip_address, hostname, timezone,
+      server_created_at, datacenter_location,
     } = req.body;
 
     maybeCreateSslAlert(ssl_days_remaining);
@@ -47,6 +53,13 @@ router.post('/', requireIngestKey, (req, res) => {
       pending_updates: pending_updates ?? null,
       network_rx_total_mb: network_rx_total_mb ?? null,
       network_tx_total_mb: network_tx_total_mb ?? null,
+      os_version: os_version ?? null,
+      kernel_version: kernel_version ?? null,
+      ip_address: ip_address ?? null,
+      hostname: hostname ?? null,
+      timezone: timezone ?? null,
+      server_created_at: server_created_at ?? null,
+      datacenter_location: datacenter_location ?? null,
     });
 
     res.status(201).json({ ok: true });
