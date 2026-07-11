@@ -7,6 +7,7 @@ const db = require('./db/init');
 
 const metricsRouter = require('./routes/metrics');
 const logsRouter = require('./routes/logs');
+const dailyCheckRouter = require('./routes/dailyCheck');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.use('/api/metrics', metricsRouter);
 app.use('/api/logs', logsRouter);
+app.use('/api/daily-check', dailyCheckRouter);
 
 // Dagelijkse cleanup om 03:00 — verwijdert rijen ouder dan 14 dagen
 cron.schedule('0 3 * * *', () => {

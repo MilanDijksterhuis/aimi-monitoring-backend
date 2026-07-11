@@ -7,11 +7,17 @@ const insertMetric = db.prepare(`
   INSERT INTO metrics (
     cpu_percent, ram_percent, ram_used_mb, ram_total_mb,
     disk_percent, disk_used_gb, disk_total_gb,
-    network_rx_mb, network_tx_mb, uptime_seconds, load_avg_1m
+    network_rx_mb, network_tx_mb, uptime_seconds, load_avg_1m,
+    load_avg_5m, load_avg_15m, ssh_users, fail2ban_banned,
+    nginx_connections, network_connections,
+    pm2_apps_online, pm2_apps_total, pm2_restart_count
   ) VALUES (
     @cpu_percent, @ram_percent, @ram_used_mb, @ram_total_mb,
     @disk_percent, @disk_used_gb, @disk_total_gb,
-    @network_rx_mb, @network_tx_mb, @uptime_seconds, @load_avg_1m
+    @network_rx_mb, @network_tx_mb, @uptime_seconds, @load_avg_1m,
+    @load_avg_5m, @load_avg_15m, @ssh_users, @fail2ban_banned,
+    @nginx_connections, @network_connections,
+    @pm2_apps_online, @pm2_apps_total, @pm2_restart_count
   )
 `);
 
@@ -21,6 +27,9 @@ router.post('/', requireIngestKey, (req, res) => {
       cpu_percent, ram_percent, ram_used_mb, ram_total_mb,
       disk_percent, disk_used_gb, disk_total_gb,
       network_rx_mb, network_tx_mb, uptime_seconds, load_avg_1m,
+      load_avg_5m, load_avg_15m, ssh_users, fail2ban_banned,
+      nginx_connections, network_connections,
+      pm2_apps_online, pm2_apps_total, pm2_restart_count,
     } = req.body;
 
     insertMetric.run({
@@ -35,6 +44,15 @@ router.post('/', requireIngestKey, (req, res) => {
       network_tx_mb: network_tx_mb ?? null,
       uptime_seconds: uptime_seconds ?? null,
       load_avg_1m: load_avg_1m ?? null,
+      load_avg_5m: load_avg_5m ?? null,
+      load_avg_15m: load_avg_15m ?? null,
+      ssh_users: ssh_users ?? null,
+      fail2ban_banned: fail2ban_banned ?? null,
+      nginx_connections: nginx_connections ?? null,
+      network_connections: network_connections ?? null,
+      pm2_apps_online: pm2_apps_online ?? null,
+      pm2_apps_total: pm2_apps_total ?? null,
+      pm2_restart_count: pm2_restart_count ?? null,
     });
 
     res.status(201).json({ ok: true });
@@ -43,6 +61,7 @@ router.post('/', requireIngestKey, (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 router.get('/latest', requireAdminKey, (req, res) => {
   const row = db.prepare('SELECT * FROM metrics ORDER BY id DESC LIMIT 1').get();
